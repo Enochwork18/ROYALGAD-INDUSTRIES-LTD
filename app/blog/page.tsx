@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Shield, Calendar, User, ArrowRight } from "lucide-react";
@@ -31,6 +31,9 @@ const posts: BlogPost[] = [
 const categories = ["All", "Hygiene Tips", "Company News", "Product Updates", "Industry"];
 
 export default function BlogPage() {
+  useEffect(() => {
+    document.title = "Blog | RoyalGad AG Industries Ltd";
+  }, []);
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredPosts = activeCategory === "All"

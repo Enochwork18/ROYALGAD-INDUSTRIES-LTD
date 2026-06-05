@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import FadeInSection from "@/components/ui/FadeInSection";
 
@@ -16,15 +16,18 @@ const galleryItems = [
       caption: `RoyalGad Product ${nums[i]}`,
     };
   }),
-  { id: 50, src: "/images/about.jpg", category: "Factory", caption: "RoyalGad Manufacturing Facility" },
-  { id: 51, src: "/images/services-cleaning.jpg", category: "Events", caption: "Industry Exhibition" },
-  { id: 52, src: "/images/services-professional-cleaning.jpg", category: "Team", caption: "RoyalGad Team at Work" },
-  { id: 53, src: "/images/services-octomaids.jpg", category: "Factory", caption: "Production Line" },
-  { id: 54, src: "/images/services-best-cleaning.jpg", category: "Certificates", caption: "Quality Standards" },
-  { id: 55, src: "/images/services-clean-house.jpg", category: "Factory", caption: "Packaging Section" },
+  { id: 50, src: "/images/about.jpg", category: "Factory", caption: "RoyalGad Manufacturing Facility & Team" },
+  { id: 51, src: "/images/services-cleaning.jpg", category: "Events", caption: "RoyalGad at Industry Exhibition" },
+  { id: 52, src: "/images/services-professional-cleaning.jpg", category: "Team", caption: "RoyalGad Operations Team" },
+  { id: 53, src: "/images/services-octomaids.jpg", category: "Factory", caption: "Production Line Overview" },
+  { id: 54, src: "/images/services-best-cleaning.jpg", category: "Certificates", caption: "Quality Standards & Certifications" },
+  { id: 55, src: "/images/services-clean-house.jpg", category: "Factory", caption: "Packaging & Distribution Section" },
 ];
 
 export default function GalleryPage() {
+  useEffect(() => {
+    document.title = "Gallery | RoyalGad AG Industries Ltd";
+  }, []);
   const [activeTab, setActiveTab] = useState("All");
 
   const filteredItems = activeTab === "All"

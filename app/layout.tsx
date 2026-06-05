@@ -7,6 +7,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Toast from "@/components/Toast";
 import ThemeProvider from "@/components/ThemeProvider";
 import PageTransition from "@/components/ui/PageTransition";
+import ConditionalLayout from "@/components/ConditionalLayout";
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -48,15 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={font.variable}>
       <body className="font-sans min-h-screen antialiased">
         <ThemeProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <Footer />
-          </div>
-          <WhatsAppButton />
-          <Toast />
+          <ConditionalLayout
+            navbar={<Navbar />}
+            footer={<Footer />}
+            whatsapp={<WhatsAppButton />}
+            toast={<Toast />}
+            pageTransition={<PageTransition>{children}</PageTransition>}
+          >
+            {children}
+          </ConditionalLayout>
         </ThemeProvider>
       </body>
     </html>

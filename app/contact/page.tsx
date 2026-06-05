@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +8,9 @@ import { useToast } from "@/lib/store";
 import FadeInSection from "@/components/ui/FadeInSection";
 
 export default function ContactPage() {
+  useEffect(() => {
+    document.title = "Contact Us | RoyalGad AG Industries Ltd";
+  }, []);
   const showToast = useToast((s) => s.show);
   const [loading, setLoading] = useState(false);
 

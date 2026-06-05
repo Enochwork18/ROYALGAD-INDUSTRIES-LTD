@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useInView } from "framer-motion";
 
 interface Props {
   end: number;
@@ -11,15 +10,33 @@ interface Props {
 
 export default function CountUp({ end, suffix = "", duration = 2000 }: Props) {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!isInView) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
     let start = 0;
-    const step = Math.ceil(end / (duration / 16));
+    const increment = Math.ceil(end / (duration / 16));
     const timer = setInterval(() => {
-      start += step;
+      start += increment;
       if (start >= end) {
         setCount(end);
         clearInterval(timer);
@@ -28,11 +45,7 @@ export default function CountUp({ end, suffix = "", duration = 2000 }: Props) {
       }
     }, 16);
     return () => clearInterval(timer);
-  }, [isInView, end, duration]);
+  }, [started, end, duration]);
 
-  return (
-    <span ref={ref}>
-      {count}{suffix}
-    </span>
-  );
+  return <span ref={ref}>{count}{suffix}</span>;
 }
