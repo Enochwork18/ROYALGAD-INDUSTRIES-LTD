@@ -233,7 +233,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 p-6 sticky top-28">
+              <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 p-6 lg:sticky lg:top-28">
                 <h3 className="font-bold text-gray-900 dark:text-slate-100 text-lg mb-4">Order Summary</h3>
                 {items.length === 0 ? (
                   <div className="text-center py-8 text-gray-400 dark:text-slate-500">
@@ -247,12 +247,20 @@ export default function CheckoutPage() {
                   <>
                     <div className="space-y-3 max-h-80 overflow-y-auto">
                       {items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 p-2 border dark:border-slate-700 rounded-lg">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{item.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">{item.size} - {formatPrice(item.price)}</p>
+                        <div key={item.id} className="p-2 border dark:border-slate-700 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{item.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-slate-400">{item.size} - {formatPrice(item.price)}</p>
+                            </div>
+                            <button
+                              onClick={() => removeItem(item.id)}
+                              className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded shrink-0"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1 mt-2">
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"
@@ -266,13 +274,8 @@ export default function CheckoutPage() {
                             >
                               <Plus className="h-3 w-3" />
                             </button>
+                            <span className="ml-auto text-xs font-medium text-gray-900 dark:text-slate-100">{formatPrice(item.price * item.quantity)}</span>
                           </div>
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
                         </div>
                       ))}
                     </div>

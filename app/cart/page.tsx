@@ -39,42 +39,62 @@ export default function CartPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="card p-4 flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-100 dark:bg-slate-800 rounded-lg flex items-center justify-center shrink-0">
-                      <Package className="h-8 w-8 text-gray-400 dark:text-slate-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <Link href={`/products/${item.slug}`} className="font-semibold text-gray-900 dark:text-slate-100 hover:text-brand-green-600 dark:hover:text-brand-green-400 transition-colors line-clamp-1">
-                        {item.name}
-                      </Link>
-                      <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{item.size}</p>
-                      <p className="text-sm font-medium text-brand-green-700 dark:text-brand-green-400 mt-1">{formatPrice(item.price)}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
+                  <div key={item.id} className="card p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 dark:bg-slate-800 rounded-lg flex items-center justify-center shrink-0">
+                        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 dark:text-slate-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <Link href={`/products/${item.slug}`} className="font-semibold text-gray-900 dark:text-slate-100 hover:text-brand-green-600 dark:hover:text-brand-green-400 transition-colors line-clamp-1 text-sm sm:text-base">
+                          {item.name}
+                        </Link>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">{item.size}</p>
+                        <p className="text-xs sm:text-sm font-medium text-brand-green-700 dark:text-brand-green-400 mt-1">{formatPrice(item.price)}</p>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-1.5">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="w-8 text-center text-sm font-medium text-gray-900 dark:text-slate-100">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="hidden sm:block text-right">
+                        <p className="font-bold text-gray-900 dark:text-slate-100">{formatPrice(item.price * item.quantity)}</p>
+                      </div>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                        onClick={() => removeItem(item.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        aria-label="Remove item"
                       >
-                        <Minus className="h-4 w-4" />
-                      </button>
-                      <span className="w-8 text-center text-sm font-medium text-gray-900 dark:text-slate-100">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                      >
-                        <Plus className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900 dark:text-slate-100">{formatPrice(item.price * item.quantity)}</p>
+                    <div className="flex sm:hidden items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="w-8 text-center text-sm font-medium text-gray-900 dark:text-slate-100">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-1.5 text-gray-500 dark:text-slate-400 hover:text-brand-green-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <p className="font-bold text-gray-900 dark:text-slate-100 text-sm">{formatPrice(item.price * item.quantity)}</p>
                     </div>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      aria-label="Remove item"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
                   </div>
                 ))}
               </div>

@@ -55,7 +55,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <section className="py-10 bg-white dark:bg-slate-900 border-b dark:border-slate-800 sticky top-16 z-30">
+      <section className="py-10 bg-white dark:bg-slate-900 border-b dark:border-slate-800 sticky top-16 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {categories.map((cat) => (
