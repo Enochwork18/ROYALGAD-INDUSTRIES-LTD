@@ -40,7 +40,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-brand-green-900 text-white overflow-hidden min-h-[90vh] flex items-center">
+    <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-brand-green-900 text-white overflow-hidden min-h-screen md:min-h-[90vh] flex items-center">
       <div className="absolute inset-0">
         {heroImages.map((src, i) => (
           <div

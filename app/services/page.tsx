@@ -30,6 +30,7 @@ export default function ServicesPage() {
         </div>
         <FadeInSection>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p className="eyebrow text-brand-green-200">What We Do</p>
             <h1 className="text-4xl lg:text-5xl font-bold">Our Services</h1>
             <p className="mt-3 text-brand-green-100 max-w-2xl mx-auto">
               Beyond manufacturing, we partner with businesses to bring their hygiene product visions to life.

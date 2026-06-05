@@ -50,7 +50,8 @@ export default function ContactPage() {
         </div>
         <FadeInSection>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold">Get In Touch With Us</h1>
+            <p className="eyebrow text-brand-green-200">Get In Touch</p>
+            <h1 className="text-4xl lg:text-5xl font-bold">Contact Us</h1>
             <p className="mt-3 text-brand-green-100 max-w-2xl mx-auto">
               We&apos;d love to hear from you. Reach out for orders, partnerships, or any inquiries.
             </p>

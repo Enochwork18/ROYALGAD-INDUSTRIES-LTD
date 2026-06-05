@@ -48,6 +48,7 @@ export default function BlogPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-brand-green-800/90 to-brand-green-700/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="eyebrow text-brand-green-200">Latest Updates</p>
           <h1 className="text-4xl lg:text-5xl font-bold">Our Blog</h1>
           <p className="mt-3 text-brand-green-100 max-w-2xl mx-auto">
             Hygiene tips, product news, and educational content from the RoyalGad team.

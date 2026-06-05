@@ -52,6 +52,7 @@ export default function PartnersPage() {
         </div>
         <FadeInSection>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p className="eyebrow text-brand-green-200">Partner With Us</p>
             <h1 className="text-4xl lg:text-5xl font-bold">Grow Your Business With RoyalGad</h1>
             <p className="mt-3 text-brand-green-100 max-w-2xl mx-auto">
               Join hundreds of businesses that partner with RoyalGad for quality hygiene products and manufacturing services.

@@ -19,6 +19,7 @@ export default function AboutPage() {
         </div>
         <FadeInSection>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p className="eyebrow text-brand-green-200">About Us</p>
             <h1 className="text-4xl lg:text-5xl font-bold">Our Story</h1>
             <p className="mt-4 text-brand-green-100 max-w-2xl mx-auto text-lg">
               From ₦10,000 to a nationally trusted brand — the RoyalGad story of grit, quality, and Nigerian enterprise.

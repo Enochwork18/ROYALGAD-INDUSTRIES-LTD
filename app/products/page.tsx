@@ -50,7 +50,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      <section className="relative bg-gradient-to-r from-brand-green-800 to-brand-green-700 text-white py-16 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-brand-green-800 to-brand-green-700 text-white py-16 lg:py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80" alt="" fill className="object-cover opacity-30" priority sizes="100vw" />
           <div className="absolute inset-0 bg-gradient-to-r from-brand-green-800/90 to-brand-green-700/90" />
