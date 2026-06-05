@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: 255 255 255;
+    --bg-secondary: 249 250 251;
+    --bg-tertiary: 243 244 246;
+    --text-primary: 17 24 39;
+    --text-secondary: 75 85 99;
+    --text-muted: 156 163 175;
+    --border: 229 231 235;
+    --card: 255 255 255;
+    --card-border: 229 231 235;
+  }
+
+  .dark {
+    --bg-primary: 15 23 42;
+    --bg-secondary: 30 41 59;
+    --bg-tertiary: 51 65 85;
+    --text-primary: 248 250 252;
+    --text-secondary: 203 213 225;
+    --text-muted: 148 163 184;
+    --border: 51 65 85;
+    --card: 30 41 59;
+    --card-border: 51 65 85;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply text-gray-900 dark:text-gray-100 antialiased;
+    background-color: rgb(var(--bg-primary));
+    color: rgb(var(--text-primary));
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  ::selection {
+    @apply bg-brand-green-600/20 text-brand-green-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-green-600 hover:bg-brand-green-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-brand-green-600/25 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .btn-accent {
+    @apply bg-brand-orange-500 hover:bg-brand-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply border-2 border-brand-orange-500 text-brand-orange-500 hover:bg-brand-orange-500 hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply text-brand-green-600 hover:underline underline-offset-4 font-semibold transition-all inline-flex items-center gap-1;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-center mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400;
+  }
+
+  .card {
+    background-color: rgb(var(--card));
+    border-color: rgb(var(--card-border));
+    @apply border rounded-2xl shadow-card;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-widest text-brand-green-600 dark:text-brand-green-400 mb-2;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all;
+  }
+
+  .glass {
+    @apply backdrop-blur-lg bg-white/90 dark:bg-gray-900/90 border-b border-gray-100/50 dark:border-gray-800/50;
+  }
+
+  .text-display {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-balance tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

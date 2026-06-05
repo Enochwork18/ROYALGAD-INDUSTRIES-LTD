@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  category      String
+  description   String
+  benefits      String
+  ingredients   String
+  howToUse      String
+  nafdacNumber  String
+  sizes         ProductSize[]
+  images        ProductImage[]
+  inStock       Boolean   @default(true)
+  featured      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orderItems    OrderItem[]
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size      String
+  price     Float
+  stock     Int      @default(0)
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String
+  order     Int      @default(0)
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  reference       String      @unique
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  deliveryAddress String?
+  deliveryMethod  String?
+  subtotal        Float
+  total           Float
+  status          String      @default("pending")
+  paymentStatus   String      @default("unpaid")
+  paymentMethod   String?
+  notes           String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  size      String
+  quantity  Int
+  price     Float
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model QuoteRequest {
+  id              String   @id @default(cuid())
+  companyName     String
+  contactPerson   String
+  phone           String
+  email           String
+  partnershipType String
+  productInterest String?
+  monthlyVolume   String?
+  message         String?
+  read            Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  category    String
+  image       String?
+  author      String   @default("RoyalGad")
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  url         String
+  caption     String?
+  category    String
+  type        String   @default("image")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  id    String @id @default("default")
+  data  String
+}
