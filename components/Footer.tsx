@@ -1,10 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
+  const [subEmail, setSubEmail] = useState("")
+  const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!subEmail) return
+    setSubStatus("loading")
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: subEmail }),
+      })
+      setSubStatus(res.ok ? "success" : "error")
+      if (res.ok) setSubEmail("")
+    } catch {
+      setSubStatus("error")
+    }
+  }
   return (
     <footer className="bg-brand-green-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -112,16 +132,24 @@ export default function Footer() {
             <p className="text-sm text-gray-400 mb-4">
               Subscribe for product updates, hygiene tips, and exclusive offers.
             </p>
-            <form onSubmit={(e) => { e.preventDefault(); alert('Thank you for subscribing!'); (e.target as HTMLFormElement).reset(); }} className="flex flex-col gap-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
               <input
                 type="email"
+                value={subEmail}
+                onChange={(e) => setSubEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-green-500"
                 required
               />
-              <button type="submit" className="btn-primary text-sm !py-2.5">
-                Subscribe
+              <button type="submit" disabled={subStatus === "loading"} className="btn-primary text-sm !py-2.5">
+                {subStatus === "loading" ? "Subscribing..." : "Subscribe"}
               </button>
+              {subStatus === "success" && (
+                <p className="text-xs text-green-400 mt-1">Thank you! You are subscribed.</p>
+              )}
+              {subStatus === "error" && (
+                <p className="text-xs text-red-400 mt-1">Please enter a valid email.</p>
+              )}
             </form>
           </div>
         </div>

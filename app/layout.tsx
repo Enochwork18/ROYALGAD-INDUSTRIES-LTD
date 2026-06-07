@@ -16,6 +16,7 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://royalgad-industries-ltd.vercel.app'),
   title: {
     default: "RoyalGad AG Industries Ltd - NAFDAC Registered Disinfectant Manufacturer",
     template: "%s | RoyalGad AG Industries Ltd",

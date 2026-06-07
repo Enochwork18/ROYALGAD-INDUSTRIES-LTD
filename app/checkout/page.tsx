@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +22,7 @@ const stepVariants = {
 };
 
 export default function CheckoutPage() {
+  useEffect(() => { document.title = "Checkout | RoyalGad AG Industries Ltd"; }, []);
   const router = useRouter();
   const { items, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
   const showToast = useToast((s) => s.show);

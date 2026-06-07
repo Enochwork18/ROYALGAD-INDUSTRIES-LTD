@@ -89,25 +89,25 @@ const testimonials = [
 
 const blogPosts = [
   {
-    title: "How to Properly Disinfect Your Home Against Germs",
-    slug: "how-to-disinfect-home",
-    excerpt: "Learn the correct techniques for disinfecting your home to eliminate 99.9% of harmful bacteria and viruses.",
-    date: "2026-05-15",
-    image: "/images/5-hidden-germ-spots.png",
+    title: "EID MUBARAK — RoyalGad Wishes You a Blessed Celebration",
+    slug: "eid-mubarak-2026",
+    excerpt: "RoyalGad AG Industries Ltd celebrates Eid with you. Wishing you peace, blessings, and joy this festive season.",
+    date: "2026-06-03",
+    image: "/images/EID MUBARAK.png",
   },
   {
-    title: "The Difference Between Antiseptic and Disinfectant",
-    slug: "antiseptic-vs-disinfectant",
-    excerpt: "Understanding when to use antiseptic vs disinfectant is crucial for effective hygiene. We break it down.",
-    date: "2026-05-08",
-    image: "/images/073A8061.jpg",
+    title: "RoyalGad Lysol Disinfectant for Farmers — Protect Your Livestock",
+    slug: "lysol-disinfectant-for-farmers",
+    excerpt: "Farmers, keep your livestock and farm environment safe with RoyalGad Lysol Disinfectant. NAFDAC-approved and highly effective.",
+    date: "2026-05-30",
+    image: "/images/lysol-for-farmers.png",
   },
   {
-    title: "Why NAFDAC Registration Matters for Hygiene Products",
-    slug: "why-nafdac-registration-matters",
-    excerpt: "NAFDAC registration ensures your hygiene products meet Nigerian safety standards. Here's why you should care.",
-    date: "2026-04-28",
-    image: "/images/073A8064.jpg",
+    title: "Happy Children's Day — RoyalGad Celebrates Every Child",
+    slug: "happy-childrens-day-2026",
+    excerpt: "RoyalGad celebrates the joy and promise of every child. Happy Children's Day from all of us!",
+    date: "2026-05-27",
+    image: "/images/happy-childrens-day.png",
   },
 ];
 

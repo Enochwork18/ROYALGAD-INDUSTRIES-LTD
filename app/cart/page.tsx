@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, Trash2, Minus, Plus, ArrowLeft, ArrowRight, Package } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
@@ -7,6 +8,7 @@ import { useCart } from "@/lib/store";
 import FadeInSection from "@/components/ui/FadeInSection";
 
 export default function CartPage() {
+  useEffect(() => { document.title = "Shopping Cart | RoyalGad AG Industries Ltd"; }, []);
   const { items, removeItem, updateQuantity, getTotal } = useCart();
   const isEmpty = items.length === 0;
 

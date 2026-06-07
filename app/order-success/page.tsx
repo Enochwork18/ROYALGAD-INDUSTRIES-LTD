@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/utils";
 import FadeInSection from "@/components/ui/FadeInSection";
 
 function OrderSuccessContent() {
+  useEffect(() => { document.title = "Order Confirmed | RoyalGad AG Industries Ltd"; }, []);
   const searchParams = useSearchParams();
   const reference = searchParams.get("reference");
   const [order, setOrder] = useState<any>(null);

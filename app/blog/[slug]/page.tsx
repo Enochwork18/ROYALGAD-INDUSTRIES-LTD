@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Calendar, User, ChevronRight, MessageCircle, ArrowLeft, CheckCircle } from "lucide-react";
 import FadeInSection from "@/components/ui/FadeInSection";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://royalgad-industries-ltd.vercel.app'
+
 const blogPosts: Record<string, { title: string; content: string; date: string; category: string; author: string }> = {
   "eid-mubarak-2026": {
     title: "EID MUBARAK — RoyalGad Wishes You a Blessed Celebration",
@@ -551,7 +553,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <ChevronRight className="h-3 w-3" />
               <Link href="/blog" className="hover:text-brand-green-600">Blog</Link>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-gray-900 dark:text-slate-100 font-medium truncate">{post.title}</span>
+              <span aria-current="page" className="text-gray-900 dark:text-slate-100 font-medium truncate">{post.title}</span>
             </div>
           </div>
         </FadeInSection>
@@ -575,13 +577,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             <div className="mt-10 pt-8 border-t dark:border-slate-700 flex items-center gap-4">
               <span className="text-sm text-gray-500 dark:text-slate-400">Share this post:</span>
-                <a href={`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://royalgad.com.ng/blog/${slug}`)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on Facebook">
+                <a href={`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${siteUrl}/blog/${slug}`)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on Facebook">
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.35 3.24 9.35 5.47v1.99H6.56v3.77h2.8v11.28h5.14V11.24h3.46l.81-3.78z" /></svg>
                 </a>
-                <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://royalgad.com.ng/blog/${slug}`)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on Twitter/X">
+                <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${siteUrl}/blog/${slug}`)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on Twitter/X">
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                 </a>
-              <a href={`https://wa.me/?text=${encodeURIComponent(`${post.title} - https://royalgad.com.ng/blog/${slug}`)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on WhatsApp"><MessageCircle className="h-4 w-4" /></a>
+              <a href={`https://wa.me/?text=${encodeURIComponent(`${post.title} - ${siteUrl}/blog/${slug}`)}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-brand-green-100 dark:hover:bg-brand-green-900/40 transition-colors" aria-label="Share on WhatsApp"><MessageCircle className="h-4 w-4" /></a>
+            </div>
+
+            <div className="mt-10 pt-8 border-t dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">Related Articles</h2>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {Object.entries(blogPosts)
+                  .filter(([s, p]) => p.category === post.category && s !== slug)
+                  .slice(0, 3)
+                  .map(([s, p]) => (
+                    <Link key={s} href={`/blog/${s}`} className="group">
+                      <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                        <span className="px-2 py-0.5 bg-brand-green-100 dark:bg-brand-green-900/40 text-brand-green-700 dark:text-brand-green-300 rounded-full text-xs font-medium">{p.category}</span>
+                        <h3 className="font-semibold text-gray-900 dark:text-slate-100 mt-2 text-sm group-hover:text-brand-green-600 dark:group-hover:text-brand-green-400 transition-colors line-clamp-2">{p.title}</h3>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{p.date}</p>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
             </div>
 
             <div className="mt-10">

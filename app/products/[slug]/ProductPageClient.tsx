@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, ShoppingCart, Share2, MessageCircle, Shield, Truck, ChevronRight, Check } from "lucide-react";
+import { CheckCircle, ShoppingCart, Share2, MessageCircle, Shield, Truck, ChevronRight, Check, ArrowRight } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useCart, useToast } from "@/lib/store";
 import { products } from "@/lib/products-data";
@@ -62,7 +62,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
             <ChevronRight className="h-3 w-3" />
             <Link href="/products" className="hover:text-brand-green-600">Products</Link>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-gray-900 dark:text-slate-100 font-medium">{product.name}</span>
+            <span aria-current="page" className="text-gray-900 dark:text-slate-100 font-medium">{product.name}</span>
           </div>
         </div>
       </div>
@@ -164,8 +164,12 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                   <p className="text-sm text-gray-600 dark:text-slate-400">{product.howToUse}</p>
                   <h3 className="font-semibold text-gray-900 dark:text-slate-100 mt-6 mb-2">Ingredients</h3>
                   <p className="text-sm text-gray-600 dark:text-slate-400">{product.ingredients}</p>
-                  <h3 className="font-semibold text-gray-900 dark:text-slate-100 mt-6 mb-2">NAFDAC Registration</h3>
-                  <p className="text-sm text-gray-600 dark:text-slate-400">{product.nafdacNumber}</p>
+                  {product.nafdacNumber !== "NAFDAC REG NO: A7-XXXX" && (
+                    <>
+                      <h3 className="font-semibold text-gray-900 dark:text-slate-100 mt-6 mb-2">NAFDAC Registration</h3>
+                      <p className="text-sm text-gray-600 dark:text-slate-400">{product.nafdacNumber}</p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -179,6 +183,31 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                 </ul>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">You May Also Like</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Object.entries(products)
+              .filter(([s]) => s !== slug && products[s].category === product.category)
+              .slice(0, 4)
+              .map(([s, p]) => (
+                <Link key={s} href={`/products/${s}`} className="group">
+                  <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                    {productImages[s] && (
+                      <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden mb-3 relative">
+                        <Image src={productImages[s]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+                      </div>
+                    )}
+                    <span className="px-2 py-0.5 bg-brand-green-100 dark:bg-brand-green-900/40 text-brand-green-700 dark:text-brand-green-300 rounded-full text-xs font-medium">{p.category}</span>
+                    <h3 className="font-semibold text-gray-900 dark:text-slate-100 mt-2 text-sm group-hover:text-brand-green-600 transition-colors">{p.name}</h3>
+                    <p className="text-sm font-bold text-brand-green-700 dark:text-brand-green-400 mt-1">{formatPrice(p.sizes[0].price)}</p>
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
       </section>
