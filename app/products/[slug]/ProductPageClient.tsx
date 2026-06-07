@@ -153,7 +153,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-slate-100 mb-2">Key Benefits</h3>
                   <ul className="space-y-2">
-                    {product.benefits.map((b, i) => (
+                    {product.benefits.filter((b) => b.trim() !== "").map((b, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-slate-400">
                         <CheckCircle className="h-4 w-4 text-brand-green-500 mt-0.5 shrink-0" />
                         {b}

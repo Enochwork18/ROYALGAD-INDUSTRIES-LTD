@@ -12,11 +12,11 @@ export default function ContactPage() {
     document.title = "Contact Us | RoyalGad AG Industries Ltd";
   }, []);
   const showToast = useToast((s) => s.show);
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setStatus("loading");
     const form = e.target as HTMLFormElement;
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
@@ -32,12 +32,12 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to send message");
+      setStatus("success");
       showToast("Message sent! We will get back to you within 24 hours.");
       form.reset();
     } catch {
+      setStatus("error");
       showToast("Failed to send message. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -131,10 +131,16 @@ export default function ContactPage() {
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Message *</label>
                     <textarea id="message" name="message" rows={5} required className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent resize-none" />
                   </div>
-                  <button type="submit" disabled={loading} className="btn-primary w-full">
-                    {loading ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send className="h-4 w-4" />}
-                    {loading ? "Sending..." : "Send Message"}
+                  <button type="submit" disabled={status === "loading"} className="btn-primary w-full">
+                    {status === "loading" ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send className="h-4 w-4" />}
+                    {status === "loading" ? "Sending..." : "Send Message"}
                   </button>
+                  {status === "success" && (
+                    <p className="text-green-600 text-sm text-center">Thank you! Your message has been received. We will get back to you within 24 hours.</p>
+                  )}
+                  {status === "error" && (
+                    <p className="text-red-600 text-sm text-center">Something went wrong. Please try again or contact us on WhatsApp.</p>
+                  )}
                 </form>
               </div>
             </div>
