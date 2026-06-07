@@ -1,151 +1,138 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff, Shield } from "lucide-react";
-
-const shakeVariants = {
-  shake: { x: [0, -10, 10, -10, 10, 0], transition: { duration: 0.4 } },
-};
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [setup, setSetup] = useState<{ email: string; password: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    if (!email || !password) {
-      setError("Please enter email and password");
+    try {
+      const result = await signIn("credentials", {
+        email: email.trim().toLowerCase(),
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password. Please check your credentials.");
+      } else if (result?.ok) {
+        router.push("/admin");
+        router.refresh();
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Connection error. Please check your internet and try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (result?.ok) {
-      router.push("/admin");
-    } else {
-      setError("Invalid email or password");
-    }
-    setLoading(false);
   };
 
-  useEffect(() => {
-    fetch("/api/setup")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.created) setSetup(data);
-      })
-      .catch(() => {});
-  }, []);
-
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-brand-green-900">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-green-400/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-brand-orange-400/10 via-transparent to-transparent" />
-      </div>
-
-      <div className="relative w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-brand-green-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="relative w-20 h-20 mx-auto mb-4">
-            <div className="absolute inset-0 bg-brand-green-500/20 rounded-full blur-xl" />
-            <div className="relative w-full h-full bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-green-500/25">
+          <div className="w-20 h-20 mx-auto mb-4">
+            <div className="w-full h-full bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-green-500/25">
               <Shield className="h-10 w-10 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white">Admin Access</h1>
+          <h1 className="text-3xl font-bold text-white">Admin Portal</h1>
           <p className="text-gray-400 mt-2">Sign in to manage your website</p>
         </div>
 
-        <motion.div
-          className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl"
-          animate={error ? "shake" : undefined}
-          variants={shakeVariants}
-        >
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm mb-6 flex items-start gap-2">
+              <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">Email Address</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">
+                Email Address
+              </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
-                  type="email"
                   id="email"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all"
+                  autoComplete="email"
+                  autoFocus
+                  disabled={loading}
+                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all disabled:opacity-60"
                   placeholder="admin@royalgad.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">
+                Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
-                  type={showPassword ? "text" : "password"}
                   id="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all"
+                  autoComplete="current-password"
+                  disabled={loading}
+                  className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all disabled:opacity-60"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                  tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {setup && (
-              <div className="p-3 bg-brand-green-500/10 border border-brand-green-500/20 rounded-lg text-sm">
-                <p className="text-brand-green-300 font-medium mb-1">First-time setup complete!</p>
-                <p className="text-brand-green-200/80 text-xs">Email: <strong>{setup.email}</strong></p>
-                <p className="text-brand-green-200/80 text-xs">Password: <strong>{setup.password}</strong></p>
-              </div>
-            )}
-            {error && (
-              <p className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-lg py-2">{error}</p>
-            )}
-
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-brand-green-600 to-brand-green-500 hover:from-brand-green-500 hover:to-brand-green-400 text-white font-semibold rounded-xl text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-brand-green-500/25"
+              disabled={loading || !email || !password}
+              className="w-full bg-gradient-to-r from-brand-green-600 to-brand-green-500 hover:from-brand-green-500 hover:to-brand-green-400 text-white font-semibold py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-brand-green-500/25 text-sm"
             >
               {loading ? (
-                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Signing In...
+                </>
               ) : (
-                <Lock className="h-4 w-4" />
+                "Sign In to Dashboard"
               )}
-              {loading ? "Authenticating..." : "Sign In"}
             </button>
           </form>
-        </motion.div>
 
-        <p className="text-center text-gray-500 text-xs mt-6">
-          RoyalGad AG Industries Ltd &copy; {new Date().getFullYear()}
-        </p>
+          <p className="text-center text-xs text-gray-500 mt-6">
+            RoyalGad AG Industries Ltd &mdash; Admin Access Only
+          </p>
+        </div>
       </div>
     </div>
   );

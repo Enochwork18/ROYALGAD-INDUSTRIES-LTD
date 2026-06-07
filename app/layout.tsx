@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "@/app/globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import Toast from "@/components/Toast";
 import ThemeProvider from "@/components/ThemeProvider";
-import PageTransition from "@/components/ui/PageTransition";
-import ConditionalLayout from "@/components/ConditionalLayout";
+import Toast from "@/components/Toast";
+import { Providers } from "@/app/providers";
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -50,15 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={font.variable}>
       <body className="font-sans min-h-screen antialiased">
         <ThemeProvider>
-          <ConditionalLayout
-            navbar={<Navbar />}
-            footer={<Footer />}
-            whatsapp={<WhatsAppButton />}
-            toast={<Toast />}
-            pageTransition={<PageTransition>{children}</PageTransition>}
-          >
+          <Providers>
             {children}
-          </ConditionalLayout>
+            <Toast />
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
