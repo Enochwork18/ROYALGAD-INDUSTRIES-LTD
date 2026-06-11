@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { sendContactNotification } from '@/lib/email'
 
 const ContactSchema = z.object({
   name: z.string().min(2).max(100),
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })
     }
     const contact = await prisma.contact.create({ data: parsed.data })
+
+    await sendContactNotification(parsed.data)
+
     return NextResponse.json({ success: true, id: contact.id }, { status: 201 })
   } catch (error) {
     console.error('Contact error:', error)

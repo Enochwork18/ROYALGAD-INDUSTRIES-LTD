@@ -1,110 +1,114 @@
 import nodemailer from "nodemailer";
-import { prisma } from "@/lib/prisma";
 
-function createTransporter() {
-  const host = process.env.SMTP_HOST;
-  const port = parseInt(process.env.SMTP_PORT || "587");
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: process.env.SMTP_SECURE === "true",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-  if (!host || !user || !pass) {
-    return null;
+const from = process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@royalgad.com.ng";
+
+export async function sendContactNotification(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}) {
+  const to = process.env.CONTACT_EMAIL || "hr.agindustries24@gmail.com";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+      <div style="background:#166534;color:white;padding:20px;text-align:center">
+        <h2 style="margin:0">New Contact Message</h2>
+      </div>
+      <div style="padding:20px;border:1px solid #e5e7eb">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px;font-weight:600;color:#374151">Name</td><td style="padding:8px">${data.name}</td></tr>
+          <tr><td style="padding:8px;font-weight:600;color:#374151">Email</td><td style="padding:8px">${data.email}</td></tr>
+          ${data.phone ? `<tr><td style="padding:8px;font-weight:600;color:#374151">Phone</td><td style="padding:8px">${data.phone}</td></tr>` : ""}
+          <tr><td style="padding:8px;font-weight:600;color:#374151">Subject</td><td style="padding:8px">${data.subject}</td></tr>
+        </table>
+        <div style="margin-top:16px;padding:12px;background:#f9fafb;border-radius:8px">
+          <p style="margin:0 0 8px;font-weight:600;color:#374151">Message:</p>
+          <p style="margin:0;color:#4b5563;white-space:pre-wrap">${data.message}</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from,
+      to,
+      subject: `[RoyalGad Contact] ${data.subject} - ${data.name}`,
+      html,
+    });
+  } catch (err) {
+    console.error("Email send failed:", err);
   }
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-  });
 }
 
 export async function sendOrderConfirmationEmail(orderId: string) {
+  const to = process.env.CONTACT_EMAIL || "hr.agindustries24@gmail.com";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+      <div style="background:#166534;color:white;padding:20px;text-align:center">
+        <h2 style="margin:0">New Order #${orderId.slice(0, 8)}</h2>
+        <p style="margin:4px 0 0;opacity:0.9">Payment Confirmed</p>
+      </div>
+      <div style="padding:20px;border:1px solid #e5e7eb">
+        <p style="color:#374151">A new order has been paid and is ready for processing.</p>
+        <p style="color:#4b5563">Order ID: <strong>${orderId}</strong></p>
+        <div style="margin-top:16px;padding:12px;background:#f0fdf4;border-radius:8px;text-align:center">
+          <p style="margin:0;color:#166534;font-weight:600">Log in to admin to view details</p>
+        </div>
+      </div>
+    </div>
+  `;
+
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { items: { include: { product: true } } },
+    await transporter.sendMail({
+      from,
+      to,
+      subject: `[RoyalGad] New Paid Order #${orderId.slice(0, 8)}`,
+      html,
     });
+  } catch (err) {
+    console.error("Order confirmation email failed:", err);
+  }
+}
 
-    if (!order) {
-      console.error("sendOrderConfirmationEmail: Order not found", orderId);
-      return false;
-    }
+export async function sendNewsletterConfirmation(email: string) {
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+      <div style="background:#166534;color:white;padding:20px;text-align:center">
+        <h2 style="margin:0">Welcome to RoyalGad!</h2>
+      </div>
+      <div style="padding:20px;border:1px solid #e5e7eb">
+        <p style="color:#374151">Thank you for subscribing to the RoyalGad AG Industries Ltd newsletter.</p>
+        <p style="color:#4b5563">You'll receive product updates, hygiene tips, and exclusive offers.</p>
+        <div style="margin:20px 0;padding:16px;background:#f0fdf4;border-radius:8px;text-align:center">
+          <p style="margin:0;color:#166534;font-weight:600">Stay safe & healthy!</p>
+          <p style="margin:4px 0 0;color:#15803d;font-size:14px">RoyalGad AG Industries Ltd</p>
+        </div>
+      </div>
+    </div>
+  `;
 
-    const transporter = createTransporter();
-    const from = process.env.EMAIL_FROM || "info@royalgad.com.ng";
-    const adminEmail = process.env.ADMIN_EMAIL || "info@royalgad.com.ng";
-
-    const itemsList = order.items
-      .map((i) => `  • ${i.product?.name || i.productId} x${i.quantity} — ₦${i.price.toLocaleString()} each`)
-      .join("\n");
-
-    const customerEmailBody = `
-Dear ${order.customerName},
-
-Thank you for your order with RoyalGad AG Industries Ltd!
-
-Order Reference: ${order.reference}
-Order Date: ${new Date(order.createdAt).toLocaleDateString("en-NG")}
-
-Items Ordered:
-${itemsList}
-
-Total Paid: ₦${order.total.toLocaleString()}
-Delivery: ${order.deliveryMethod || "To be confirmed"}
-Payment Status: Paid ✓
-
-You will receive a WhatsApp notification when your order ships.
-
-If you have any questions, please reply to this email or contact us via WhatsApp at +234 802 328 2550.
-
-Best regards,
-RoyalGad AG Industries Ltd
-Tipper Garage Area, Ibadan, Oyo State, Nigeria
-info@royalgad.com.ng
-    `.trim();
-
-    const adminEmailBody = `
-🛍️ NEW ORDER RECEIVED
-
-Reference: ${order.reference}
-Customer: ${order.customerName}
-Email: ${order.customerEmail}
-Phone: ${order.customerPhone}
-Delivery: ${order.deliveryAddress || "N/A"} (${order.deliveryMethod || "Not specified"})
-
-Items:
-${itemsList}
-
-Total: ₦${order.total.toLocaleString()}
-Payment: Paid via Paystack
-    `.trim();
-
-    if (transporter) {
-      await transporter.sendMail({
-        from: `"RoyalGad" <${from}>`,
-        to: order.customerEmail,
-        subject: `Order Confirmed — ${order.reference}`,
-        text: customerEmailBody,
-      });
-
-      await transporter.sendMail({
-        from: `"RoyalGad Orders" <${from}>`,
-        to: adminEmail,
-        subject: `New Order — ${order.reference} — ₦${order.total.toLocaleString()}`,
-        text: adminEmailBody,
-      });
-    } else {
-      console.log("SMTP not configured. To send real emails, set SMTP_HOST, SMTP_USER, SMTP_PASS in .env");
-      console.log("===== CUSTOMER EMAIL (to:", order.customerEmail, ") =====");
-      console.log(customerEmailBody);
-      console.log("===== ADMIN EMAIL (to:", adminEmail, ") =====");
-      console.log(adminEmailBody);
-    }
-
-    return true;
-  } catch (error) {
-    console.error("sendOrderConfirmationEmail error:", error);
-    return false;
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Welcome to RoyalGad Newsletter!",
+      html,
+    });
+  } catch (err) {
+    console.error("Newsletter confirmation email failed:", err);
   }
 }
