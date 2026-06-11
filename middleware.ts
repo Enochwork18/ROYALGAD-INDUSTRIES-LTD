@@ -1,17 +1,31 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default auth((req) => {
-  if (!req.auth) {
+const secret = new TextEncoder().encode(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "fallback-secret");
+
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("next-auth.session-token")?.value
+    || req.cookies.get("__Secure-next-auth.session-token")?.value;
+
+  if (!token) {
+    const loginUrl = new URL("/admin/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  try {
+    const { jwtVerify } = await import("jose");
+    await jwtVerify(token, secret);
+    return NextResponse.next();
+  } catch {
     const loginUrl = new URL("/admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }
-  return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
-    "/admin/dashboard/:path*",
+    "/admin",
     "/admin/products/:path*",
     "/admin/orders/:path*",
     "/admin/messages/:path*",

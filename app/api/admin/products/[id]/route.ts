@@ -1,106 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const ProductSizeSchema = z.object({
-  size: z.string(),
-  price: z.number().positive(),
-  stock: z.number().int().nonnegative(),
-})
-
-const UpdateProductSchema = z.object({
-  name: z.string().min(1),
-  slug: z.string().min(1),
-  category: z.string().min(1),
-  description: z.string().min(1),
-  benefits: z.string().default("[]"),
-  howToUse: z.string().min(1),
-  ingredients: z.string().min(1),
-  nafdacNumber: z.string().min(1),
-  sizes: z.array(ProductSizeSchema).min(1),
-  inStock: z.boolean().optional().default(true),
-  featured: z.boolean().optional().default(false),
-  images: z.array(z.object({ url: z.string().url(), alt: z.string().default(''), order: z.number().int().optional() })).optional(),
-})
-
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const body = await req.json()
-    const parsed = UpdateProductSchema.safeParse(body)
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })
-    }
+    const product = await prisma.product.findUnique({
+      where: { id: params.id },
+      include: { sizes: true, images: true },
+    });
+    if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    return NextResponse.json({ product });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 });
+  }
+}
 
-    const { sizes, images, ...productData } = parsed.data
-
-    await prisma.productSize.deleteMany({ where: { productId: id } })
-    if (images) {
-      await prisma.productImage.deleteMany({ where: { productId: id } })
-    }
-
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const body = await req.json();
     const product = await prisma.product.update({
-      where: { id },
+      where: { id: params.id },
       data: {
-        ...productData,
-        sizes: { create: sizes },
-        images: images ? { create: images } : undefined,
+        name: body.name,
+        slug: body.slug,
+        description: body.description,
+        category: body.category,
+        howToUse: body.howToUse,
+        ingredients: body.ingredients,
+        nafdacNumber: body.nafdacNumber,
+        featured: body.featured,
+        inStock: body.inStock,
       },
-      include: { sizes: true, images: { orderBy: { order: 'asc' } } },
-    })
-
-    return NextResponse.json(product)
+    });
+    if (body.sizes) {
+      await prisma.productSize.deleteMany({ where: { productId: params.id } });
+      for (const size of body.sizes) {
+        await prisma.productSize.create({
+          data: {
+            productId: params.id,
+            size: size.size,
+            price: parseFloat(size.price),
+            stock: size.stock || 0,
+          },
+        });
+      }
+    }
+    return NextResponse.json({ product });
   } catch (error) {
-    console.error('Product update error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
-    await prisma.product.delete({ where: { id } })
-    return NextResponse.json({ success: true })
+    await prisma.product.delete({ where: { id: params.id } });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Product delete error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
-  try {
-    const body = await req.json()
-    const { field } = body
-
-    const product = await prisma.product.findUnique({ where: { id } })
-    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-
-    if (field === 'featured') {
-      const updated = await prisma.product.update({ where: { id }, data: { featured: !product.featured } })
-      return NextResponse.json(updated)
-    }
-    if (field === 'inStock') {
-      const updated = await prisma.product.update({ where: { id }, data: { inStock: !product.inStock } })
-      return NextResponse.json(updated)
-    }
-
-    return NextResponse.json({ error: 'Invalid field' }, { status: 400 })
-  } catch (error) {
-    console.error('Product toggle error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }

@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { prisma } from "@/lib/prisma";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -37,6 +36,7 @@ export function generateReference(): string {
 }
 
 export async function calculateSubtotal(items: { productId: string; variantId?: string; quantity: number }[]): Promise<number> {
+  const { prisma } = await import("@/lib/prisma");
   let total = 0;
   for (const item of items) {
     const product = await prisma.product.findUnique({

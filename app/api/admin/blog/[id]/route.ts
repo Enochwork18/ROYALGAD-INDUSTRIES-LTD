@@ -1,53 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const UpdateBlogSchema = z.object({
-  title: z.string().min(1).optional(),
-  slug: z.string().min(1).optional(),
-  excerpt: z.string().min(1).optional(),
-  content: z.string().min(1).optional(),
-  category: z.string().min(1).optional(),
-  image: z.string().optional().nullable(),
-})
-
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const body = await req.json()
-    const parsed = UpdateBlogSchema.safeParse(body)
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })
-    }
-
-    const post = await prisma.blogPost.update({
-      where: { id },
-      data: parsed.data,
-    })
-
-    return NextResponse.json(post)
+    const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
+    if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    return NextResponse.json({ post });
   } catch (error) {
-    console.error('Blog update error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch post" }, { status: 500 });
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
-    await prisma.blogPost.delete({ where: { id } })
-    return NextResponse.json({ success: true })
+    const body = await req.json();
+    const post = await prisma.blogPost.update({
+      where: { id: params.id },
+      data: {
+        title: body.title,
+        content: body.content,
+        excerpt: body.excerpt,
+        image: body.image,
+        author: body.author,
+        published: body.published,
+      },
+    });
+    return NextResponse.json({ post });
   } catch (error) {
-    console.error('Blog delete error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    await prisma.blogPost.delete({ where: { id: params.id } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
   }
 }

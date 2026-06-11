@@ -1,34 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const UpdateStatusSchema = z.object({
-  status: z.string().min(1),
-})
-
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = await params
-
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const body = await req.json()
-    const parsed = UpdateStatusSchema.safeParse(body)
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })
-    }
-
-    const order = await prisma.order.update({
-      where: { id },
-      data: { status: parsed.data.status },
-      include: { items: { include: { product: true } } },
-    })
-
-    return NextResponse.json(order)
+    const order = await prisma.order.findUnique({
+      where: { id: params.id },
+      include: { items: true },
+    });
+    if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    return NextResponse.json({ order });
   } catch (error) {
-    console.error('Order update error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch order" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const body = await req.json();
+    const order = await prisma.order.update({
+      where: { id: params.id },
+      data: {
+        status: body.status,
+      },
+    });
+    return NextResponse.json({ order });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const body = await req.json();
+    const order = await prisma.order.update({
+      where: { id: params.id },
+      data: {
+        status: body.status,
+      },
+    });
+    return NextResponse.json({ order });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    await prisma.order.delete({ where: { id: params.id } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete order" }, { status: 500 });
   }
 }

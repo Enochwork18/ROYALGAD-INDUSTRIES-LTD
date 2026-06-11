@@ -69,29 +69,24 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link, idx) => (
-              <motion.div
+            {navLinks.map((link) => (
+              <Link
                 key={link.href}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05, duration: 0.3 }}
+                href={link.href}
+                prefetch={true}
+                className={cn(
+                  "relative px-3 py-2 text-sm font-medium rounded-lg transition-colors group",
+                  pathname === link.href
+                    ? "text-brand-green-600 dark:text-brand-green-400"
+                    : "text-gray-700 dark:text-gray-300 hover:text-brand-green-600 dark:hover:text-brand-green-400"
+                )}
               >
-                <Link
-                  href={link.href}
-                  className={cn(
-                    "relative px-3 py-2 text-sm font-medium rounded-lg transition-colors group",
-                    pathname === link.href
-                      ? "text-brand-green-600 dark:text-brand-green-400"
-                      : "text-gray-700 dark:text-gray-300 hover:text-brand-green-600 dark:hover:text-brand-green-400"
-                  )}
-                >
-                  {link.label}
-                  <span className={cn(
-                    "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-brand-green-600 dark:bg-brand-green-400 transition-all duration-300",
-                    pathname === link.href ? "w-4" : "w-0 group-hover:w-4"
-                  )} />
-                </Link>
-              </motion.div>
+                {link.label}
+                <span className={cn(
+                  "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-brand-green-600 dark:bg-brand-green-400 transition-all duration-300",
+                  pathname === link.href ? "w-4" : "w-0 group-hover:w-4"
+                )} />
+              </Link>
             ))}
           </div>
 
@@ -173,26 +168,21 @@ export default function Navbar() {
                 </button>
               </div>
               <div className="p-4 space-y-1">
-                {navLinks.map((link, idx) => (
-                  <motion.div
+                {navLinks.map((link) => (
+                  <Link
                     key={link.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05, duration: 0.3 }}
+                    href={link.href}
+                    prefetch={true}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                      pathname === link.href
+                        ? "bg-brand-green-50 dark:bg-brand-green-900/30 text-brand-green-700 dark:text-brand-green-400"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    )}
                   >
-                    <Link
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        "block px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                        pathname === link.href
-                          ? "bg-brand-green-50 dark:bg-brand-green-900/30 text-brand-green-700 dark:text-brand-green-400"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
+                    {link.label}
+                  </Link>
                 ))}
                 <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
                   <Link
