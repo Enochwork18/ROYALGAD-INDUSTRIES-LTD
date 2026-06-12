@@ -10,10 +10,17 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },
   reactStrictMode: true,
+  experimental: {
+    serverActions: { allowedOrigins: ["royalgad-industries-ltd.vercel.app", "localhost:3000"] },
+  },
   headers: async () => [
     {
       source: "/(.*)",

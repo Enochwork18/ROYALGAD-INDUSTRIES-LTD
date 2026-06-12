@@ -13,10 +13,12 @@ export default function ContactPage() {
   }, []);
   const showToast = useToast((s) => s.show);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
+    setErrorMsg("");
     const form = e.target as HTMLFormElement;
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
@@ -31,13 +33,13 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to send message");
+      const result = await res.json();
+      if (!res.ok || !result.success) throw new Error(result.error || "Failed to send message");
       setStatus("success");
-      showToast("Message sent! We will get back to you within 24 hours.");
       form.reset();
-    } catch {
+    } catch (err: any) {
       setStatus("error");
-      showToast("Failed to send message. Please try again.");
+      setErrorMsg(err.message || "Something went wrong");
     }
   };
 
@@ -136,10 +138,14 @@ export default function ContactPage() {
                     {status === "loading" ? "Sending..." : "Send Message"}
                   </button>
                   {status === "success" && (
-                    <p className="text-green-600 text-sm text-center">Thank you! Your message has been received. We will get back to you within 24 hours.</p>
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm text-center">
+                      Thank you! Your message has been received. We will get back to you within 24 hours.
+                    </div>
                   )}
                   {status === "error" && (
-                    <p className="text-red-600 text-sm text-center">Something went wrong. Please try again or contact us on WhatsApp.</p>
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm text-center">
+                      Failed: {errorMsg}. Please WhatsApp us at +234 809 842 5876.
+                    </div>
                   )}
                 </form>
               </div>

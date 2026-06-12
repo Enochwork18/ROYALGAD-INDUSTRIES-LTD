@@ -15,7 +15,11 @@ export async function middleware(req: NextRequest) {
 
   try {
     const { jwtVerify } = await import("jose");
-    await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret);
+    if (payload.role !== "ADMIN") {
+      const loginUrl = new URL("/admin/login", req.url);
+      return NextResponse.redirect(loginUrl);
+    }
     return NextResponse.next();
   } catch {
     const loginUrl = new URL("/admin/login", req.url);

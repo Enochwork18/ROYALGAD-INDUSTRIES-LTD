@@ -27,11 +27,9 @@ export default function AdminLoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password. Please check your credentials.");
-      } else if (result?.ok) {
+      } else {
         router.push("/admin");
         router.refresh();
-      } else {
-        setError("Something went wrong. Please try again.");
       }
     } catch {
       setError("Connection error. Please check your internet and try again.");

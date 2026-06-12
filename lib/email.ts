@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const from = process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@royalgad.com.ng";
+const from = process.env.EMAIL_FROM || process.env.SMTP_USER || "noreply@royalgad.com.ng";
 
 export async function sendContactNotification(data: {
   name: string;

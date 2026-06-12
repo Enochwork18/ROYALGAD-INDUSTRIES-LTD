@@ -379,8 +379,8 @@ export function generateStaticParams() {
   return Object.keys(blogPosts).map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params;
   const post = blogPosts[slug];
   if (!post) return { title: "Post Not Found" };
   return {
@@ -531,8 +531,8 @@ function renderContent(content: string) {
   return elements;
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const post = blogPosts[slug];
   if (!post) {
     return (
