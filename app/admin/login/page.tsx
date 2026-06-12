@@ -1,40 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Lock, Mail, Eye, EyeOff, Shield } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/admin";
-      const result = await signIn("credentials", {
-        email: email.trim().toLowerCase(),
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Invalid email or password. Please check your credentials.");
-        setLoading(false);
-      } else {
-        window.location.href = callbackUrl;
-      }
-    } catch {
-      setError("Connection error. Please check your internet and try again.");
-      setLoading(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "CredentialsSignin") {
+      setError("Invalid email or password. Please check your credentials.");
     }
-  }, [email, password]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-brand-green-900 flex items-center justify-center p-4">
@@ -59,7 +36,8 @@ export default function AdminLoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form action="/api/auth/callback/credentials" method="POST" className="space-y-5">
+            <input type="hidden" name="callbackUrl" value="/admin" />
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">
                 Email Address
@@ -68,14 +46,12 @@ export default function AdminLoginPage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   id="email"
+                  name="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
                   autoFocus
-                  disabled={loading}
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all disabled:opacity-60"
+                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all"
                   placeholder="admin@royalgad.com"
                 />
               </div>
@@ -89,39 +65,21 @@ export default function AdminLoginPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  type="password"
                   required
                   autoComplete="current-password"
-                  disabled={loading}
-                  className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all disabled:opacity-60"
+                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent transition-all"
                   placeholder="Enter your password"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={loading || !email || !password}
               className="w-full bg-gradient-to-r from-brand-green-600 to-brand-green-500 hover:from-brand-green-500 hover:to-brand-green-400 text-white font-semibold py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-brand-green-500/25 text-sm"
             >
-              {loading ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                "Sign In to Dashboard"
-              )}
+              Sign In to Dashboard
             </button>
           </form>
 
