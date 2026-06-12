@@ -34,7 +34,10 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
       const result = await res.json();
-      if (!res.ok || !result.success) throw new Error(result.error || "Failed to send message");
+      if (!res.ok || !result.success) {
+        const detail = result.details?.fieldErrors ? Object.values(result.details.fieldErrors).flat().join(", ") : "";
+        throw new Error(result.error + (detail ? `: ${detail}` : ""));
+      }
       setStatus("success");
       form.reset();
     } catch (err: any) {
