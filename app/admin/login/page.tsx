@@ -1,24 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff, Shield } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/admin";
       const result = await signIn("credentials", {
         email: email.trim().toLowerCase(),
         password,
@@ -27,16 +26,15 @@ export default function AdminLoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password. Please check your credentials.");
+        setLoading(false);
       } else {
-        router.push("/admin");
-        router.refresh();
+        window.location.href = callbackUrl;
       }
     } catch {
       setError("Connection error. Please check your internet and try again.");
-    } finally {
       setLoading(false);
     }
-  };
+  }, [email, password]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-brand-green-900 flex items-center justify-center p-4">
