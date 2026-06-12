@@ -9,7 +9,7 @@ const ContactSchema = z.object({
   email: z.string().email(),
   phone: z.string().optional(),
   subject: z.string().min(3).max(200),
-  message: z.string().min(10).max(5000),
+  message: z.string().min(1).max(5000),
 })
 
 export async function POST(req: NextRequest) {
